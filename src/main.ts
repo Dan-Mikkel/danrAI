@@ -1,4 +1,5 @@
 import { ErrorMapper } from "utils/ErrorMapper";
+import { LogLevel } from "./Logger";
 
 declare global {
   /*
@@ -13,6 +14,7 @@ declare global {
   interface Memory {
     uuid: number;
     log: any;
+    logLevel: LogLevel;
   }
 
   interface CreepMemory {
@@ -22,6 +24,7 @@ declare global {
   }
 
   // Syntax for adding proprties to `global` (ex "global.log")
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace NodeJS {
     interface Global {
       log: any;
@@ -34,10 +37,6 @@ declare global {
 export const loop = ErrorMapper.wrapLoop(() => {
   console.log(`Current game tick is ${Game.time}`);
 
-  // Automatically delete memory of missing creeps
-  for (const name in Memory.creeps) {
-    if (!(name in Game.creeps)) {
-      delete Memory.creeps[name];
-    }
-  }
+
+
 });
