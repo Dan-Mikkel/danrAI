@@ -16,7 +16,9 @@ declare interface ProcessInfo {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-declare interface ProcessMemory {}
+declare interface ProcessMemory {
+  children?: { [label: string]: number };
+}
 
 declare interface SchedulerMemory {
   processTable?: ProcessTable;
