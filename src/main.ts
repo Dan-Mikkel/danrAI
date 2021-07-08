@@ -2,10 +2,10 @@ import { LogLevel, Logger } from "./Logger";
 import { ErrorMapper } from "utils/ErrorMapper";
 import { Kernel } from "./Kernel";
 import { OSMemory } from "./index";
+import { ProcessRegistry } from "./ProcessRegistry";
 import { Scheduler } from "./Scheduler";
 import { setCpuLimit } from "./utils/CpuLimitUtil";
-import {ProcessRegistry} from "./ProcessRegistry";
-import {bundle} from "./processes/index"
+import { bundle } from "./processes";
 
 declare global {
   /*
@@ -46,7 +46,7 @@ global.log = new Logger();
 const processRegistry = new ProcessRegistry();
 processRegistry.install(bundle);
 
-const kernel = new Kernel(new Scheduler(processRegistry), setCpuLimit());
+export const kernel = new Kernel(new Scheduler(processRegistry), setCpuLimit());
 global.log.info("Bootstrapped the kernel!");
 
 export const loop = ErrorMapper.wrapLoop(() => {
