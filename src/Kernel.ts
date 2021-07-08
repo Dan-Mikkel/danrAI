@@ -1,5 +1,5 @@
-import { Scheduler } from "./Scheduler";
 import { Process } from "./Process";
+import { Scheduler } from "./Scheduler";
 
 export class Kernel {
   public scheduler: Scheduler;
