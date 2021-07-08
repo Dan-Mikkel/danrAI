@@ -1,5 +1,11 @@
+import { LogLevel, Logger } from "./Logger";
 import { ErrorMapper } from "utils/ErrorMapper";
-import { LogLevel } from "./Logger";
+import { Kernel } from "./Kernel";
+import { OSMemory } from "./index";
+import { Scheduler } from "./Scheduler";
+import { setCpuLimit } from "./utils/CpuLimitUtil";
+import {ProcessRegistry} from "./ProcessRegistry";
+import {bundle} from "./processes/index"
 
 declare global {
   /*
@@ -15,6 +21,7 @@ declare global {
     uuid: number;
     log: any;
     logLevel: LogLevel;
+    os: OSMemory;
   }
 
   interface CreepMemory {
@@ -27,16 +34,26 @@ declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace NodeJS {
     interface Global {
-      log: any;
+      log: Logger;
     }
   }
 }
 
-// When compiling TS to JS and bundling with rollup, the line numbers and file names in error messages change
-// This utility uses source maps to get the line numbers and file names of the original, TS source code
+// Initialize a logger which will be used in the entire project.
+// Bootstrapping here
+global.log = new Logger();
+// Making a new process registry and installing the different processes we have available on it.
+const processRegistry = new ProcessRegistry();
+processRegistry.install(bundle);
+
+const kernel = new Kernel(new Scheduler(processRegistry), setCpuLimit());
+global.log.info("Bootstrapped the kernel!");
+
 export const loop = ErrorMapper.wrapLoop(() => {
-  console.log(`Current game tick is ${Game.time}`);
-
-
-
+  // Start up the kernel
+  kernel.init();
+  // Run the kernel while possible
+  kernel.tick();
+  // Tear down the kernel
+  kernel.shutdown();
 });
